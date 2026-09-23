@@ -83,30 +83,30 @@ SELECT
     t.amount,
     t.currency,
     t.country AS txn_country,
-    c.country AS home_country,
+    c.regionid AS home_country,
     t.device_id,
     -- Amount Risk Rule
     CASE WHEN t.amount > 5000 THEN 30 ELSE 0 END AS amount_risk,
     -- Location Risk Rule
-    CASE WHEN t.country <> c.country THEN 20 ELSE 0 END AS location_risk,
+    CASE WHEN t.country <> c.regionid THEN 20 ELSE 0 END AS location_risk,
     -- Device Risk Rule
     CASE WHEN t.device_id LIKE '%NEW%' THEN 25 ELSE 0 END AS device_risk,
     -- Total Score
     (
         (CASE WHEN t.amount > 5000 THEN 30 ELSE 0 END) +
-        (CASE WHEN t.country <> c.country THEN 20 ELSE 0 END) +
+        (CASE WHEN t.country <> c.regionid THEN 20 ELSE 0 END) +
         (CASE WHEN t.device_id LIKE '%NEW%' THEN 25 ELSE 0 END)
     ) AS total_risk_score,
     -- Deterministic Decision Logic
     CASE 
         WHEN (
             (CASE WHEN t.amount > 5000 THEN 30 ELSE 0 END) +
-            (CASE WHEN t.country <> c.country THEN 20 ELSE 0 END) +
+            (CASE WHEN t.country <> c.regionid THEN 20 ELSE 0 END) +
             (CASE WHEN t.device_id LIKE '%NEW%' THEN 25 ELSE 0 END)
         ) >= 70 THEN 'BLOCK'
         WHEN (
             (CASE WHEN t.amount > 5000 THEN 30 ELSE 0 END) +
-            (CASE WHEN t.country <> c.country THEN 20 ELSE 0 END) +
+            (CASE WHEN t.country <> c.regionid THEN 20 ELSE 0 END) +
             (CASE WHEN t.device_id LIKE '%NEW%' THEN 25 ELSE 0 END)
         ) >= 40 THEN 'REVIEW'
         ELSE 'APPROVE'
@@ -115,6 +115,10 @@ FROM `transactions` t
 LEFT JOIN `customer-profile` FOR SYSTEM_TIME AS OF t.`$rowtime` AS c
     ON t.customer_id = c.userid;
 ```
+
+Once executed, Flink instantly provisions a continuous running job that materializes these results into a new `fraud-decisions-mat` topic. You can query this newly created table to watch the real-time evaluated transactions flow in:
+
+![Flink Results](screenshots/flink_results.png)
 
 ---
 
