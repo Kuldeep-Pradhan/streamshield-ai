@@ -29,25 +29,25 @@ SELECT
     -- Amount Risk Rule
     CASE WHEN t.amount > 5000 THEN 30 ELSE 0 END AS amount_risk,
     -- Location Risk Rule
-    CASE WHEN t.country != c.country THEN 20 ELSE 0 END AS location_risk,
+    CASE WHEN t.country <> c.country THEN 20 ELSE 0 END AS location_risk,
     -- Device Risk Rule
     CASE WHEN t.device_id LIKE '%NEW%' THEN 25 ELSE 0 END AS device_risk,
     -- Total Score
     (
         (CASE WHEN t.amount > 5000 THEN 30 ELSE 0 END) +
-        (CASE WHEN t.country != c.country THEN 20 ELSE 0 END) +
+        (CASE WHEN t.country <> c.country THEN 20 ELSE 0 END) +
         (CASE WHEN t.device_id LIKE '%NEW%' THEN 25 ELSE 0 END)
     ) AS total_risk_score,
     -- Deterministic Decision Logic
     CASE 
         WHEN (
             (CASE WHEN t.amount > 5000 THEN 30 ELSE 0 END) +
-            (CASE WHEN t.country != c.country THEN 20 ELSE 0 END) +
+            (CASE WHEN t.country <> c.country THEN 20 ELSE 0 END) +
             (CASE WHEN t.device_id LIKE '%NEW%' THEN 25 ELSE 0 END)
         ) >= 70 THEN 'BLOCK'
         WHEN (
             (CASE WHEN t.amount > 5000 THEN 30 ELSE 0 END) +
-            (CASE WHEN t.country != c.country THEN 20 ELSE 0 END) +
+            (CASE WHEN t.country <> c.country THEN 20 ELSE 0 END) +
             (CASE WHEN t.device_id LIKE '%NEW%' THEN 25 ELSE 0 END)
         ) >= 40 THEN 'REVIEW'
         ELSE 'APPROVE'
