@@ -40,6 +40,9 @@ You will need the following topics:
 > For `security-alerts`, navigate to the Confluent UI, look at the topic messages, and click **Infer Schema** to automatically generate a JSON Schema Data Contract!
 > 
 > ![Infer Schema](screenshots/infer_schema.png)
+>
+> You can also view the rich AI-enriched JSON payload flowing through in real-time:
+> ![Security Alerts Messages](screenshots/security_alerts_messages.png)
 
 ### Generate Customer Data
 1. Go to **Connectors** and add a **Sample Data (Datagen)** connector.
